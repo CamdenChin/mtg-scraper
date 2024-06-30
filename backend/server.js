@@ -58,12 +58,12 @@ app.get('/api/cards', (req, res) => {
     });
 });
 
-// API endpoint to search cards
 app.get('/api/cards/search', (req, res) => {
     const { name, type, rarity, set, page = 1, limit = 10 } = req.query;
+    const offset = (page - 1) * limit;  // Calculate the offset
+
     let query = 'SELECT * FROM cards WHERE 1=1';
     const params = [];
-    const offset = (page - 1) * limit;
 
     if (name) {
         query += ' AND name LIKE ?';
@@ -82,19 +82,22 @@ app.get('/api/cards/search', (req, res) => {
         params.push(set);
     }
 
-    query += ' LIMIT ? OFFSET ?';
-    params.push(limit, offset);
+    query += ' ORDER BY name ASC';
 
-    console.log('Constructed Query:', query);
-    console.log('Query Parameters:', params);
+    query += ' LIMIT ? OFFSET ?';  // Add pagination control to the SQL query
+    params.push(limit, offset);
 
     db.all(query, params, (err, rows) => {
         if (err) {
-            console.error('Database error:', err.message);
             res.status(500).json({ success: false, message: err.message });
         } else {
-            console.log('Query result:', rows);
-            res.json({ success: true, message: 'Search results', data: rows });
+            res.json({
+                success: true,
+                message: 'Search results',
+                data: rows,
+                page: parseInt(page),
+                limit: parseInt(limit)
+            });
         }
     });
 });

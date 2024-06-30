@@ -1,25 +1,22 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import CardSearch from './components/CardSearch';
+import CardList from './components/CardList';
+import Deck from './components/Deck';
+import './App.css'; // Assuming you might want to keep your CSS
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const [cards, setCards] = useState([]); // To hold the search results
+
+    return (
+        <div className="App">
+            <header className="App-header">
+                <h1>Magic: The Gathering Deck Builder</h1>
+                <CardSearch onSearchResults={setCards} />
+                <CardList cards={cards} />
+                <Deck />
+            </header>
+        </div>
+    );
 }
 
 export default App;
