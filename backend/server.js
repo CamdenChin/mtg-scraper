@@ -40,14 +40,16 @@ app.get('/', (req, res) => {
     res.send('Hello World');
 });
 
-// API endpoint to get all cards
 app.get('/api/cards', (req, res) => {
-    const { page = 1, limit = 10 } = req.query;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
+
+    console.log(`Page: ${page}, Limit: ${limit}, Offset: ${offset}`); // Log to verify
 
     db.all('SELECT * FROM cards LIMIT ? OFFSET ?', [limit, offset], (err, rows) => {
         if (err) {
-            res.status(400).json({ success: false, error: err.message });
+            res.status(400).json({ error: err.message });
             return;
         }
         res.json({
@@ -58,13 +60,16 @@ app.get('/api/cards', (req, res) => {
     });
 });
 
+
 app.get('/api/cards/search', (req, res) => {
     const { name, type, rarity, set, page = 1, limit = 10 } = req.query;
     const offset = (page - 1) * limit;  // Calculate the offset
 
-    let query = 'SELECT * FROM cards WHERE 1=1';
+    // Start with a base query that excludes entries without an image_url
+    let query = 'SELECT * FROM cards WHERE image_url IS NOT NULL'; // This ensures no card without an image is selected
     const params = [];
 
+    // Dynamically add conditions based on the query parameters provided
     if (name) {
         query += ' AND name LIKE ?';
         params.push(`%${name}%`);
@@ -83,9 +88,8 @@ app.get('/api/cards/search', (req, res) => {
     }
 
     query += ' ORDER BY name ASC';
-
     query += ' LIMIT ? OFFSET ?';  // Add pagination control to the SQL query
-    params.push(limit, offset);
+    params.push(parseInt(limit), parseInt(offset));
 
     db.all(query, params, (err, rows) => {
         if (err) {

@@ -1,16 +1,21 @@
 import React from 'react';
 
-const CardList = ({ cards }) => {
+function CardList({ cards }) {
+    if (!cards.length) {
+        return <p>No cards found with images.</p>; // Friendly message when no cards are returned
+    }
+
     return (
-        <ul>
-            {cards.map(card => (
-                <li key={card.id}>
-                    <img src={card.image_url} alt={card.name} style={{ width: "100px", height: "auto" }} />
-                    <div>{card.name} - Mana Cost: {card.mana_cost}</div>
-                </li>
+        <div id="search-results" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
+            {cards.map((card, index) => (
+                <div key={index} style={{ margin: '10px', border: '1px solid #ccc', borderRadius: '8px', padding: '16px', textAlign: 'center' }}>
+                    <img src={card.image_url} alt={card.name} style={{ maxWidth: '100%', borderRadius: '4px' }} />
+                    <p>{card.name}</p>
+                    <p>{card.mana_cost || 'No mana cost'}</p>
+                </div>
             ))}
-        </ul>
+        </div>
     );
-};
+}
 
 export default CardList;
