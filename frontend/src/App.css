@@ -36,3 +36,10 @@
     transform: rotate(360deg);
   }
 }
+
+/* Add the new CSS class for image resizing here */
+.card-image {
+  width: 200px;
+  height: 280px;
+  object-fit: cover;
+}
