@@ -15,6 +15,7 @@ function CardSearch({ onSearchResults }) {
             const response = await axios.get('http://localhost:5001/api/cards/search', {
                 params: { name: query, page }
             });
+            console.log('Fetched Data:', response.data.data); // Log the fetched data for debugging
             onSearchResults(response.data.data);
             setPage(page); // Update the page state
         } catch (err) {
